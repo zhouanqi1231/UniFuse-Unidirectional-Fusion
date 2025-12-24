@@ -12,8 +12,11 @@ def compute_depth_metrics(gt, pred, mask=None, median_align=False):
     if mask is None:
         mask = gt > 0
     
-    gt = gt[mask]
-    pred = pred[mask]
+    if mask.any():
+        pred = pred[mask.view_as(pred) > 0]
+        gt = gt[mask.view_as(gt) > 0]
+    else:
+        return
 
     gt[gt<0.1] = 0.1
     pred[pred<0.1] = 0.1

@@ -29,11 +29,11 @@ settings = parser.parse_args()
 
 
 def main():
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cpu")
 
     load_weights_folder = os.path.expanduser(settings.load_weights_dir)
     model_path = os.path.join(load_weights_folder, "model.pth")
-    model_dict = torch.load(model_path)
+    model_dict = torch.load(model_path, map_location=torch.device('cpu'))
 
     # data
     datasets_dict = {"3d60": datasets.ThreeD60,
@@ -87,8 +87,8 @@ def main():
 
             gt_depth = inputs["gt_depth"]
             mask = inputs["val_mask"]
-            for i in range(gt_depth.shape[0]):
-                evaluator.compute_eval_metrics(gt_depth[i:i + 1], pred_depth[i:i + 1], mask[i:i + 1])
+            # for i in range(gt_depth.shape[0]):
+            #     evaluator.compute_eval_metrics(gt_depth[i:i + 1], pred_depth[i:i + 1], mask[i:i + 1])
 
             if settings.save_samples:
                 saver.save_samples(inputs["rgb"], gt_depth, pred_depth, mask)
